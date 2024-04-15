@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-
-import logo from "./logo.svg";
 import "./App.css";
 
 function App({ weatherApi }) {
@@ -25,12 +23,7 @@ function App({ weatherApi }) {
   return (
     <div className="App">
       <header className="App-header">
-        <img
-          src={logo}
-          className="App-logo"
-          alt="logo"
-          title={forecasts?.length}
-        />
+        <h1>Weather forecast</h1>
         <table>
           <thead>
             <tr>
