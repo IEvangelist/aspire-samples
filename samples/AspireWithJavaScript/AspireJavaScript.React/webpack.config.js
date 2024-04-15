@@ -1,38 +1,48 @@
 const path = require("path");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
+const webpack = require("webpack");
 
-module.exports = {
-  entry: "./src/index.js",
-  output: {
-    path: path.resolve(__dirname, "/dist"),
-    filename: "bundle.js",
-  },
-  plugins: [
-    new HTMLWebpackPlugin({
-      template: "./src/index.html",
-      favicon: "./src/favicon.ico",
-    }),
-  ],
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: [
-              "@babel/preset-env",
-              ["@babel/preset-react", { runtime: "automatic" }],
-            ],
+module.exports = (env) => {
+  return {
+    entry: "./src/index.js",
+    devServer: {
+        port: env.PORT || 3001,
+    },
+    output: {
+      path: path.resolve(__dirname, "/dist"),
+      filename: "bundle.js",
+    },
+    plugins: [
+      new HTMLWebpackPlugin({
+        template: "./src/index.html",
+        favicon: "./src/favicon.ico",
+      }),
+      new webpack.DefinePlugin({
+        'process.env.REACT_APP_WEATHER_API_HTTPS': JSON.stringify(process.env.services__weatherapi__https__0),
+        'process.env.REACT_APP_WEATHER_API_HTTP': JSON.stringify(process.env.services__weatherapi__http__0),
+      })
+    ],
+    module: {
+      rules: [
+        {
+          test: /\.js$/,
+          exclude: /node_modules/,
+          use: {
+            loader: "babel-loader",
+            options: {
+              presets: [
+                "@babel/preset-env",
+                ["@babel/preset-react", { runtime: "automatic" }],
+              ],
+            },
           },
         },
-      },
-      {
-        test: /\.css$/,
-        exclude: /node_modules/,
-        use: ["style-loader", "css-loader"],
-      },
-    ],
-  },
+        {
+          test: /\.css$/,
+          exclude: /node_modules/,
+          use: ["style-loader", "css-loader"],
+        },
+      ],
+    },
+  };
 };
