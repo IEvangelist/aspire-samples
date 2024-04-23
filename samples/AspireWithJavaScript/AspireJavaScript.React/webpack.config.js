@@ -1,4 +1,3 @@
-const path = require("path");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 
@@ -6,10 +5,11 @@ module.exports = (env) => {
   return {
     entry: "./src/index.js",
     devServer: {
-        port: env.PORT || 3001,
+        port: env.PORT || 4001,
+        disableHostCheck: true
     },
     output: {
-      path: path.resolve(__dirname, "/dist"),
+      path: `${__dirname}/dist`,
       filename: "bundle.js",
     },
     plugins: [

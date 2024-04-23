@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": ">=20.7"
+    "node": ">=20.12"
   },
   "scripts": {
-    "build": "webpack --mode production",
+    "build": "webpack --mode production --config webpack.config.js",
     "start": "run-script-os",
     "start:win32": "webpack-dev-server --mode development --hot --env PORT=%PORT%",
     "start:default": "webpack-dev-server --mode development --hot --env PORT=$PORT"

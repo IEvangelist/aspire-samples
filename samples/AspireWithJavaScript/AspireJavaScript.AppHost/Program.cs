@@ -1,24 +1,47 @@
 ﻿var builder = DistributedApplication.CreateBuilder(args);
 
-var weatherApi =
-    builder.AddProject<Projects.AspireJavaScript_MinimalApi>("weatherapi");
+var weatherApi = builder.AddProject<Projects.AspireJavaScript_MinimalApi>("weatherapi")
+    .WithExternalHttpEndpoints();
+
+var weatherApiHttp = weatherApi.GetEndpoint("http");
+var weatherApiHttps = weatherApi.GetEndpoint("https");
+
+DockerBuildArg[] buildArgs =
+[
+    new("services__weatherapi__https__0"),
+    new("services__weatherapi__http__0"),
+];
 
 // Angular: npm run start
 builder.AddNpmApp("angular", "../AspireJavaScript.Angular")
     .WithReference(weatherApi)
-    .WithHttpEndpoint(targetPort: 3000, env: "PORT")
-    .PublishAsDockerFile();
+    .WithHttpEndpoint(env: "PORT")
+    .WithExternalHttpEndpoints()
+    .PublishAsDockerFile(buildArgs);
 
 // React: npm run start
-builder.AddNpmApp("react", "../AspireJavaScript.React")
-    .WithReference(weatherApi)
-    .WithHttpEndpoint(targetPort: 3001, env: "PORT")
-    .PublishAsDockerFile();
+var react = builder.AddNpmApp("react", "../AspireJavaScript.React")
+    .WithEnvironment("BROWSER", "none") // Disable opening browser on npm start
+    .WithEnvironment("REACT_APP_WEATHER_API_HTTP", weatherApiHttp)
+    .WithHttpEndpoint(env: "PORT")
+    .WithExternalHttpEndpoints()
+    .PublishAsDockerFile(buildArgs);
+
+if (weatherApiHttps.IsAllocated)
+{
+    react.WithEnvironment("REACT_APP_WEATHER_API_HTTPS", weatherApiHttps);
+}
 
 // Vue: npm run dev
-builder.AddNpmApp("vue", "../AspireJavaScript.Vue", "dev")
-    .WithReference(weatherApi)
-    .WithHttpEndpoint(targetPort: 3002, env: "PORT")
-    .PublishAsDockerFile();
+var vue = builder.AddNpmApp("vue", "../AspireJavaScript.Vue")
+    .WithEnvironment("VITE_WEATHER_API_HTTP", weatherApiHttp)
+    .WithHttpEndpoint(env: "PORT")
+    .WithExternalHttpEndpoints()
+    .PublishAsDockerFile(buildArgs);
+
+if (weatherApiHttps.IsAllocated)
+{
+    vue.WithEnvironment("VITE_WEATHER_API_HTTPS", weatherApiHttps);
+}
 
 builder.Build().Run();

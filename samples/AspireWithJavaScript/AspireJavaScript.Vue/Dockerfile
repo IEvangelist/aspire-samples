@@ -1,14 +1,12 @@
-FROM node:20.7
+FROM node:20.12
 
 WORKDIR /app
 
 COPY package.json package.json
 COPY package-lock.json package-lock.json
 
-RUN npm i
+RUN npm install
 
 COPY . .
 
-EXPOSE 5173
-
-CMD [ "npm", "dev" ]
+CMD [ "npm", "start" ]
